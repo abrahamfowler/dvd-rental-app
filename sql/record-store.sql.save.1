@@ -1,0 +1,120 @@
+/* Make sure tables don't exist before creation */
+DROP TABLE IF EXISTS orderline, transaction, customer, record, artist;
+
+/* Define table for storing artists */
+CREATE TABLE artist (
+	id INT AUTO_INCREMENT,
+	first_name VARCHAR(50),
+	last_name VARCHAR(50),
+	PRIMARY KEY(id)
+) ENGINE=InnoDB;
+
+/* Define table for storing records (products) */
+CREATE TABLE record (
+	ean VARCHAR(8),
+	title VARCHAR(50) NOT NULL,
+	artist_id INT,
+	genre VARCHAR(50),
+	year YEAR(4),
+	price DECIMAL(10, 2) unsigned NOT NULL,
+	PRIMARY KEY (ean),
+	FOREIGN KEY (artist_id)
+		REFERENCES artist (id)
+	ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+/* Define table for storing customers */
+CREATE TABLE customer (
+	id INT AUTO_INCREMENT,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	email_address VARCHAR(50) NOT NULL,
+	address_1 VARCHAR(50) NOT NULL,
+	address_2 VARCHAR(50),
+	postcode VARCHAR(10) NOT NULL,
+	PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+/* Define table for storing orders */
+CREATE TABLE transaction (
+	id INT AUTO_INCREMENT,
+	customer_id INT NOT NULL,
+	delivery_method INT,
+	dt_date DATETIME,
+	PRIMARY KEY (id),
+	FOREIGN KEY (customer_id)
+		REFERENCES customer(id)
+) ENGINE=InnoDB;
+
+/* Define table for storing orderlines */
+CREATE TABLE orderline (
+	id INT AUTO_INCREMENT,
+	transaction_id INT,
+	record_ean VARCHAR(8),
+	quantity INT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (transaction_id)
+		REFERENCES transaction(id),
+	FOREIGN KEY (record_ean)
+		REFERENCES record(ean)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+) ENGINE=InnoDB;DROP TABLE IF EXISTS orderline, transaction, customer, record, artist, song;
+CREATE TABLE record
+(
+ean VARCHAR(8),
+title VARCHAR(50) NOT NULL,
+artist_id INT,
+genre VARCHAR(50),
+year YEAR(4),
+price DECIMAL(10, 2) unsigned NOT NULL,
+PRIMARY KEY(ean),
+FOREIGN KEY (artist_id)
+REFERENCES artist (id)
+ON DELETE CASCADE
+)ENGINE=InnoDB;
+
+CREATE TABLE customer
+(
+id INT AUTO_INCREMENT,
+firstname VARCHAR(50)  NOT NULL,
+lastname VARCHAR(50) NOT NULL,
+email_address VARCHAR(50) NOT NULL,
+address_1 VARCHAR(50) NOT NULL,
+address_2 VARCHAR(50),
+postcode VARCHAR(10) NOT NULL,
+PRIMARY KEY(id)
+)ENGINE=InnoDB;
+
+CREATE TABLE transaction (
+	id INT AUTO_INCREMENT,
+	customer_id INT NOT NULL,
+	delivery_method INT,
+	dt_date DATETIME,
+	PRIMARY KEY (id),
+	FOREIGN KEY (customer_id)
+	REFERENCES customer(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE artist(
+id INT AUTO_INCREMENT,
+firstname VARCHAR(50),
+lastname VARCHAR(50), 
+PRIMARY KEY(id)
+)ENGINE=InnoDB;
+
+
+
+CREATE TABLE orderline (
+	id INT AUTO_INCREMENT,
+	transaction_id INT,
+	record_ean VARCHAR(8),
+	quantity INT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (transaction_id)
+		REFERENCES transaction(id),
+	FOREIGN KEY (record_ean)
+		REFERENCES record(ean)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+) ENGINE=InnoDB;

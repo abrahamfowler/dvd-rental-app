@@ -1,0 +1,100 @@
+<?php
+
+$content = "<h1>Add a record</h1>";
+
+// define a variable with path to the script which will process form
+// ->	$_SERVER["PHP_SELF"] is a path to the current script (index.php)
+$action = $_SERVER["PHP_SELF"]."?page=add-record";
+
+// fetch the artists so that we have access to their names and IDs
+$sql = "SELECT id, first_name, last_name 
+        FROM artist
+	    ORDER BY last_name";
+
+$result = mysqli_query($link, $sql);
+
+// check query returned a result
+if ($result === false) {
+    echo mysqli_error($link);
+} else {
+    $options = "";
+    // create an option for each artist
+    while ($row = mysqli_fetch_assoc($result)) {
+        $options .= "<option value='".$row['id']."'>";
+        $options .= $row['first_name']." ".$row['last_name'];
+        $options .= "</option>";
+    }
+}
+
+// define the form HTML (would ideally be in a template)
+$form_html = "<form action='".$action."' method='POST'>
+		<fieldset>
+		    <label for='ean'>EAN (required):</label>
+		    <input type='text' name='ean'/>
+		</fieldset>
+                <fieldset>
+                    <label for='title'>Title:</label>
+                    <input type='text' name='title' />
+                </fieldset>
+                <fieldset>
+                    <label for='artist_id'>Artist:</label>
+                    <select name='artist_id'>
+
+                        ".$options."
+                        <option value='NULL'>Not listed</option>
+                    </select>
+                </fieldset>
+                <fieldset>
+                    <label for='genre'>Genre</label>
+                    <input type='text' name='genre' />
+                </fieldset>
+                <fieldset>
+                    <label for='year'>Year:</label>
+                    <input type='text' name='year' size='5' placeholder='YYYY' />
+                </fieldset>
+                <fieldset>
+                    <label for='price'>Price (&pound;):</label>
+                    <input type='text' name='price' placeholder='00.00' />
+                </fieldset>
+                <button type='submit'>Submit</button>
+              </form>";
+
+// append form HTML to content string
+$content .= $form_html;
+
+// ------- START form processing code... -------
+
+// define variables and set to empty values
+$title = $artist_id = $price = $year = $genre = "";
+
+// check if there was a POST request
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	// validate the form data
+	$ean = $_POST["ean"];
+	$title =  $_POST["title"];
+	$artist_id =  $_POST["artist_id"];
+	$genre =  $_POST["genre"];
+	$year =  $_POST["year"];
+	$price =  $_POST["price"];
+
+	// define the insertion query
+	$sql = "INSERT INTO record (ean, title, artist_id, genre, year, price)
+		VALUES ('$ean', '$title', '$artist_id', '$genre', '$year', '$price')";
+
+	// run the query to insert the data
+	$result = mysqli_query($link, $sql);
+
+	// check if the query went ok
+	if ($result === false) {
+		echo mysqli_error($link);
+	} else {
+		$content .= "Record successfully added to database.";
+	}
+}
+
+// ------- END form processing code... -------
+
+// output the html
+echo($content);
+
+?>

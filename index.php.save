@@ -1,0 +1,14 @@
+<?php
+
+// connect to the database
+require('includes/db_connect.php');
+
+// include the header HTML
+include('templates/header.html');
+
+// include the navigation HTML
+include('templates/navigation.html');
+
+// get the page id from the URL
+// if no parameter detected...
+if (!isset($_GET['page'])) {
